@@ -12,14 +12,19 @@ export const Home = () => {
   const dispatch = useDispatch();
   // posts потому что в store.js указан posts, а сам posts ведет на postreducer в котором посты и теги
   const { posts, tags } = useSelector((state) => state.posts);
+  const userData = useSelector((state) => state.auth.data);
+
   const isPostLoaded = posts.status === "loading";
   const isTagsLoaded = tags.status === "loading";
   //
+  console.log(userData, "userData");
+  console.log(posts, "posts", posts.user, "posts.user");
   console.log(tags.items[0]);
   React.useEffect(() => {
     dispatch(fetchPosts());
     dispatch(fetchTags());
   }, []);
+
   return (
     <>
       <Tabs
@@ -34,19 +39,21 @@ export const Home = () => {
         <Grid xs={8} item>
           {(isPostLoaded ? [...Array(5)] : posts.items).map((obj, index) =>
             isPostLoaded ? (
-              // это нужно чтобы не выдавало ошибку, тк при первой итерации элемента массива будут undefined
               <Post key={index} isLoading={true} />
             ) : (
               <Post
+                key={obj._id}
                 id={obj._id}
                 title={obj.title}
-                imageUrl={obj.imageUrl}
+                imageUrl={
+                  obj.imageUrl ? `http://localhost:3001${obj.imageUrl}` : ""
+                }
                 user={obj.user}
                 createdAt={obj.createdAt}
                 viewsCount={obj.viewsCount}
                 commentsCount={3}
                 tags={obj.tags}
-                isEditable
+                isEditable={userData?._id === obj.user._id}
               />
             )
           )}

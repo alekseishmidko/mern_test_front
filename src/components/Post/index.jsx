@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/rules-of-hooks */
 import React from "react";
 import clsx from "clsx";
 import IconButton from "@mui/material/IconButton";
@@ -9,7 +10,8 @@ import { Link } from "react-router-dom";
 import styles from "./Post.module.scss";
 import { UserInfo } from "../UserInfo";
 import { PostSkeleton } from "./Skeleton";
-
+import { useDispatch } from "react-redux";
+import { fetchRemovePost } from "../../redux/slices/posts";
 export const Post = ({
   id,
   title,
@@ -27,12 +29,16 @@ export const Post = ({
   if (isLoading) {
     return <PostSkeleton />;
   }
-
-  const onClickRemove = () => {};
+  const dispatch = useDispatch();
+  const onClickRemove = () => {
+    if (window.confirm(" Are u sure to delete post?")) {
+      dispatch(fetchRemovePost(id));
+    }
+  };
 
   return (
     <div className={clsx(styles.root, { [styles.rootFull]: isFullPost })}>
-      {isEditable && (
+      {
         <div className={styles.editButtons}>
           <Link to={`/posts/${id}/edit`}>
             <IconButton color="primary">
@@ -43,7 +49,7 @@ export const Post = ({
             <DeleteIcon />
           </IconButton>
         </div>
-      )}
+      }
       {imageUrl && (
         <img
           className={clsx(styles.image, { [styles.imageFull]: isFullPost })}
